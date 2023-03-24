@@ -1,64 +1,71 @@
-const box = document.querySelector('.box');
-const scoreElement = document.querySelector('#score');
+console.log('Jeu démarré');
+
+let box = document.querySelector('.box');
+console.log(box);
 let click = 0;
+let scoreElement = document.querySelector('#score');
+
 let chrono = 30;
-const chronoElement = document.querySelector('#chrono');
-chronoElement.innerHTML = chrono;
+let chronoElement = document.querySelector('#chrono');
+chronoElement.innerHTML = ("0" + chrono).slice(-2);
 
-// Récupération du score précédent depuis Local Storage
-const previousScore = localStorage.getItem('score');
-if (previousScore) {
-  click = parseInt(previousScore);
-  scoreElement.innerHTML = click;
-}
+// Récupération des scores depuis localStorage
+let bestScore = localStorage.getItem('bestScore') || 0;
+let previousScore = localStorage.getItem('previousScore') || 0;
 
-// Afficher le meilleur score précédent depuis Local Storage
-const highScoreElement = document.querySelector('#high-score');
-const previousHighScore = localStorage.getItem('highScore');
-if (previousHighScore) {
-  highScoreElement.innerHTML = previousHighScore;
-}
+// Affichage des scores précédents et meilleur score
+scoreElement.innerHTML = `Score précédent: ${previousScore}<br>Meilleur score: ${bestScore}<br>Score actuel: ${click}`;
 
-box.addEventListener("click", () => {
-  console.log('click sur la box !');
-  click += 1;
-  scoreElement.innerHTML = click;
-
-  // Stockage du score actuel dans Local Storage et mise à jour du meilleur score
-  localStorage.setItem('score', click);
-  if (click > parseInt(previousHighScore)) {
-    localStorage.setItem('highScore', click);
-    highScoreElement.innerHTML = click;
+// Fonction pour mettre à jour le score
+function updateScore() {
+  click++;
+  scoreElement.innerHTML = `Score précédent: ${previousScore}<br>Meilleur score: ${bestScore}<br>Score actuel: ${click}`;
+  if (click > bestScore) {
+    bestScore = click;
+    localStorage.setItem('bestScore', bestScore);
   }
+  localStorage.setItem('previousScore', click);
+}
 
-  let top = Math.floor(Math.random() * window.innerHeight);
-  let left = Math.floor(Math.random() * window.innerWidth);
+// Fonction pour remettre à zéro le score
+function resetScore() {
+  click = 0;
+  previousScore = localStorage.getItem('previousScore') || 0;
+  localStorage.setItem('previousScore', previousScore);
+  scoreElement.innerHTML = `Score précédent: ${previousScore}<br>Meilleur score: ${bestScore}<br>Score actuel: ${click}`;
+}
 
+// Fonction pour faire bouger la boîte de manière aléatoire
+function moveBox() {
+  let top = Math.floor(Math.random() * (window.innerHeight - box.clientHeight));
+  let left = Math.floor(Math.random() * (window.innerWidth - box.clientWidth));
   box.style.top = `${top}px`;
   box.style.left = `${left}px`;
-});
+}
 
-const intervalId = setInterval(() => {
-  console.log("timer");
-  if (chrono !== 0) {
+// Initialisation des variables
+box.style.position = 'absolute';
+box.style.cursor = 'pointer';
+box.style.transition = 'top 0.5s, left 0.5s';
+moveBox();
+
+// Lancement du chrono
+let timer = setInterval(() => {
+  if (chrono > 0) {
     chrono--;
-    chronoElement.innerHTML = chrono;
+    chronoElement.innerHTML = ("0" + chrono).slice(-2);
   } else {
-    clearInterval(intervalId);
+    clearInterval(timer);
+    alert(`Temps écoulé ! Votre score est de ${click}`);
+    resetScore();
+    chrono = 30;
+    chronoElement.innerHTML = ("0" + chrono).slice(-2);
+    moveBox();
   }
 }, 1000);
 
-// Ajouter un bouton pour réinitialiser le score
-const resetButton = document.querySelector('#reset-button');
-resetButton.addEventListener("click", () => {
-  click = 0;
-  scoreElement.innerHTML = click;
-  localStorage.removeItem('score');
+// Écouteur d'événements pour le clic sur la boîte
+box.addEventListener("click", () => {
+  updateScore();
+  moveBox();
 });
-
-
-    chronoElement.innerHTML = chrono;
-  } else {
-    clearInterval(intervalId);
-  }
-}, 1000);
