@@ -1,5 +1,3 @@
-console.log('Jeu démarré');
-
 const box = document.querySelector('.box');
 const scoreElement = document.querySelector('#score');
 let click = 0;
@@ -14,13 +12,24 @@ if (previousScore) {
   scoreElement.innerHTML = click;
 }
 
+// Afficher le meilleur score précédent depuis Local Storage
+const highScoreElement = document.querySelector('#high-score');
+const previousHighScore = localStorage.getItem('highScore');
+if (previousHighScore) {
+  highScoreElement.innerHTML = previousHighScore;
+}
+
 box.addEventListener("click", () => {
   console.log('click sur la box !');
   click += 1;
   scoreElement.innerHTML = click;
 
-  // Stockage du score actuel dans Local Storage
+  // Stockage du score actuel dans Local Storage et mise à jour du meilleur score
   localStorage.setItem('score', click);
+  if (click > parseInt(previousHighScore)) {
+    localStorage.setItem('highScore', click);
+    highScoreElement.innerHTML = click;
+  }
 
   let top = Math.floor(Math.random() * window.innerHeight);
   let left = Math.floor(Math.random() * window.innerWidth);
@@ -33,6 +42,21 @@ const intervalId = setInterval(() => {
   console.log("timer");
   if (chrono !== 0) {
     chrono--;
+    chronoElement.innerHTML = chrono;
+  } else {
+    clearInterval(intervalId);
+  }
+}, 1000);
+
+// Ajouter un bouton pour réinitialiser le score
+const resetButton = document.querySelector('#reset-button');
+resetButton.addEventListener("click", () => {
+  click = 0;
+  scoreElement.innerHTML = click;
+  localStorage.removeItem('score');
+});
+
+
     chronoElement.innerHTML = chrono;
   } else {
     clearInterval(intervalId);
