@@ -64,7 +64,7 @@ let timer = setInterval(() => {
   }
 }, 1000);
 
-// Écouteur d'événements pour le clic sur la boîte
+// options sur les événements pour le clic sur la boîte
 box.addEventListener("click", () => {
   updateScore();
   moveBox();
