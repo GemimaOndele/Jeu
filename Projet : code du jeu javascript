@@ -1,3 +1,4 @@
+console.log('Jeu démarré');
 
 // Tableau des scores
 let scores = [];
